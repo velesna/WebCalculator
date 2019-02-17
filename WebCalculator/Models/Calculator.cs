@@ -8,15 +8,15 @@ namespace WebCalculator.Models
 {
     public class CalculatorModel
     {
-        Dictionary<string, Func<double, double, double>> _operations;
-        DBContext _db;
-        string _expression;
+        Dictionary<string, Func<double, double, double>> operations;
+        DBContext db;
+        string expression;
         CalculatorModel(string expression)
         {
-            _expression = expression;
-            _db = new DBContext();
+            this.expression = expression;
+            db = new DBContext();
 
-            _operations = new Dictionary<string, Func<double, double, double>>
+            operations = new Dictionary<string, Func<double, double, double>>
             {
                 { "+", (x, y) => x + y },
                 { "-", (x, y) => x - y },
@@ -28,18 +28,18 @@ namespace WebCalculator.Models
             };
 
 
-            _db.AddExpression("127.0.0.1",_expression);
+            db.AddExpression("127.0.0.1", expression);
         }
         public double Parse()
         {
-            if (new Regex(@"^__________$").IsMatch(_expression))
+            if (new Regex(@"^__________$").IsMatch(expression))
             {
                 var fuck = from strings in _expression.Split('(')
-                           from substrings in strings.Split(_operations.Keys.ToArray(), StringSplitOptions.RemoveEmptyEntries)
+                           from substrings in strings.Split(operations.Keys.ToArray(), StringSplitOptions.RemoveEmptyEntries)
                            from numbers in substrings
                             .Trim(new char[] { ' ', ')' })
                             .Cast<double>()
-                           select new {op = _operations.Keys, numbers };
+                           select new {op = operations.Keys, numbers };
 
                 /*var numbers = _expression.Split(_operations.Keys.ToArray(), StringSplitOptions.RemoveEmptyEntries)
                     .Cast<double>()
@@ -55,19 +55,15 @@ namespace WebCalculator.Models
         }
         public void DefineOperation(string op, Func<double, double, double> funcs)
         {
-            if (!_operations.ContainsKey(op))
+            if (!operations.ContainsKey(op))
                 throw new ArgumentException($"оператор {op} уже присутствует");
-            _operations.Add(op, funcs);
+            operations.Add(op, funcs);
         }
         public double PerformOperation(string op, double x, double y)
         {
-            if (!_operations.ContainsKey(op))
+            if (!operations.ContainsKey(op))
                 throw new ArgumentException($"Опреатор {op} не поддерживается");
             return _operations[op](x, y);
         }
-    }
-
-    internal class ctor
-    {
     }
 }
