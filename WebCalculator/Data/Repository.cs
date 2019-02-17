@@ -12,10 +12,12 @@ namespace WebCalculator.Data
     {
         List<string> expressions;
         string connectionstring;
+        //SqlConnection connection;
 
         public DBContext()
         {
             connectionstring = ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString;
+            //connection = new SqlConnection(connectionstring);
         }
         //public async Task<List<string>> GetExpressions(string Adress)
         public List<string> GetExpressions(string Adress)
@@ -26,6 +28,8 @@ namespace WebCalculator.Data
                 {
                     command.Parameters.AddWithValue("@Adress", Adress);
                     command.CommandType = CommandType.StoredProcedure;
+
+                    expressions = new List<string>();
                     try
                     {
                         //await connection.OpenAsync();
@@ -33,19 +37,17 @@ namespace WebCalculator.Data
                         //SqlDataReader reader = await command.ExecuteReaderAsync();
                         SqlDataReader reader = command.ExecuteReader();
 
-                        expressions = new List<string>();
                         while (reader.Read())
                             expressions.Add(reader.GetString(0));
                         reader.Close();
                     }
+                    catch (SqlException)
+                    {
+                        expressions.Add("Подключение к БД отстутствует");
+                    }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
-                    }
-                    finally
-                    {
-                        connection.Close();
-                        Console.WriteLine("Подключение закрыто...");
                     }
                 }
             }

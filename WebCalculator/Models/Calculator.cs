@@ -34,7 +34,7 @@ namespace WebCalculator.Models
         {
             if (new Regex(@"^__________$").IsMatch(expression))
             {
-                var fuck = from strings in _expression.Split('(')
+                var fuck = from strings in expression.Split('(')
                            from substrings in strings.Split(operations.Keys.ToArray(), StringSplitOptions.RemoveEmptyEntries)
                            from numbers in substrings
                             .Trim(new char[] { ' ', ')' })
@@ -63,7 +63,7 @@ namespace WebCalculator.Models
         {
             if (!operations.ContainsKey(op))
                 throw new ArgumentException($"Опреатор {op} не поддерживается");
-            return _operations[op](x, y);
+            return operations[op](x, y);
         }
     }
 }
